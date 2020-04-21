@@ -1,0 +1,43 @@
+Revision history for Data-Roundtrip
+
+0.01    2020-04-13
+        First version, released on an unsuspecting world.
+
+0.02	2020-04-14
+	Changed NAME in documentation of the scripts, some
+	POD errors in lib/Data/Roundtrip.pm and some errors
+	in the documentation.
+
+0.03	2020-04-15
+	Makefile.PL changes thanks to marto @ Perlmonks.org
+
+0.04	2020-04-15
+	Added perl2dump_filtered(), perl2dump_homebrew()
+	and dump_perl_var_recursively().
+	Fixed scripts to work with new sub names.
+
+0.05	2020-04-16
+	Makefile.PL minor modification.
+
+0.07	2020-04-20
+	Changed default options for scripts so that they don't do pretty
+	printing by default.
+	Added import parameters 'no-unicode-escape-permanently'
+	and 'unicode-escape-permanently' for efficient use of *2dump*
+	subs.
+	Added benchmarks to time 2dump subs and inserted target in Makefile.
+
+0.08	2020-04-20
+	Removed dependency to Sub::Override, overriding subs is done by us now.
+	Fixed POD mistakes.
+
+0.09	2020-04-20
+	Added dependency Test::Script and Test::Pod (thank you Slaven Rezić)
+
+0.10	2020-04-20
+	Added minimum version for Test::Script to be 1.09
+	to support script_stderr_is. Thank you Slaven Rezić!)
+
+0.11	2020-04-21
+	Checked failures for test script t/02-random-data-structure.t
+	and provided a fix and added a warning in CAVEATS section.
