@@ -1,0 +1,173 @@
+Revision history for Data-Roundtrip
+
+0.01    2020-04-13
+	First version, released on an unsuspecting world.
+
+0.02	2020-04-14
+	Changed NAME in documentation of the scripts, some
+	POD errors in lib/Data/Roundtrip.pm and some errors
+	in the documentation.
+
+0.03	2020-04-15
+	Makefile.PL changes thanks to marto @ Perlmonks.org
+
+0.04	2020-04-15
+	Added perl2dump_filtered(), perl2dump_homebrew()
+	and dump_perl_var_recursively().
+	Fixed scripts to work with new sub names.
+
+0.05	2020-04-16
+	Makefile.PL minor modification.
+
+0.07	2020-04-20
+	Changed default options for scripts so that they don't do pretty
+	printing by default.
+	Added import parameters 'no-unicode-escape-permanently'
+	and 'unicode-escape-permanently' for efficient use of *2dump*
+	subs.
+	Added benchmarks to time 2dump subs and inserted target in Makefile.
+
+0.08	2020-04-20
+	Removed dependency to Sub::Override, overriding subs is done by us now.
+	Fixed POD mistakes.
+
+0.09	2020-04-20
+	Added dependency Test::Script and Test::Pod (thank you Slaven Rezić)
+
+0.10	2020-04-20
+	Added minimum version for Test::Script to be 1.09
+	to support script_stderr_is. Thank you Slaven Rezić!)
+
+0.11	2020-04-21
+	Checked failures for test script t/02-random-data-structure.t
+	and provided a fix and added a warning in CAVEATS section.
+
+0.12	2023-03-09
+	Wrapped within an eval{}, call to JSON::decode_json in sub json2perl.
+	This allows graceful death when input json is not valid.
+
+0.13	2023-03-11
+	In the previous version I had forgotten an erroneous INSTALL_BASE
+	in Makefile.PL which pointed to $ENV{HOME}/usr.
+	This resulted in installing this module in installing user's
+	home dir, under usr/
+	Now this is fixed. Those who installed the previous version (0.12),
+	please make sure to uninstall it from $ENV{HOME}/usr.
+
+0.14	2023-03-11
+	See 0.13.
+
+0.15	2023-04-04
+	Changed the minimum Perl version required to be 5.008
+	in all test files and the Makefile.PL.
+	Aesthetic changes in Makefile.PL.
+	NOTE: this version has never been released to CPAN.
+
+0.16    2023-05-30
+	1. Added a CAVEAT/WARNING in the documentation
+	for dump2perl($input) saying that it does
+	eval($input) which is a security risk if $input
+	comes from untrusted sources (e.g. user input).
+	2. Added a print statement to STDERR in sub dump2perl()
+	warning about said eval($input) (using a warn '').
+	This warning also states that dump2perl() will be
+	removed in the future because of this eval().
+	3. Added extra tests in t/10-scripts.t to check
+	that scripts fail when they should. In addition
+	to testing scripts that they succeed when they should.
+
+0.17	2023-06-02
+	Requires Test::Script v1.28 because Test::Script::script_fails()
+	used by t/10-scripts.t was introduced there.
+
+0.18	2023-09-01
+	Added two extra functions: jsonfile2perl() and yamlfile2perl()
+	which read JSON and YAML from a file into a perl data structure.
+	Added a new test file '12-from-file.t' which tests file-related
+	functionality including said two functions.
+	Documentation supplemented.
+
+0.19    2023-10-03 01:00
+        added printing the yaml structure in test file '12-from-file.t'
+        if it fails to ease debugging.
+
+0.20    2023-10-03 14:00
+        YAML::Load complains for strings like 'abc\"xyz',
+        so I have decided to remove all such strings from the
+        randomly created data structures of test file '12-from-file.t'.
+        This does not affect the behaviour of yaml2* subs but
+        only limits the testing range for input strings to yaml2* subs.
+
+0.21    2023-10-03 14:45
+        Fixed bug in script/yaml2perl.pl to print the data structure.
+
+0.22    2023-10-06 11:00
+        Switched from YAML to YAML::PP because the former failed on
+        some tricky input, see https://github.com/ingydotnet/yaml-pm/issues/224
+        Added extra test file (t/13-yaml-tricky-cases.t) for testing
+        these cases.
+        Added extra author test suit (xt/deficiencies run with make deficiencies)
+        to test the tricky cases for all YAML, YAML::PP, YAML::XS
+        Enclosed within eval {} all JSON::* calls (which were not already enclosed)
+
+0.23    2023-10-11 11:30
+        Modified t/12-from-file.t to delete temp dirs on success
+        but keep them on failure.
+        I am trying to debug t/12-from-file.t killed on some test environments.
+
+0.24    2023-10-12 12:00
+        String input to yaml2perl() is now being untainted in order
+        to avoid a bug with Perls < v5.14 which causes YAML::PP to
+        loop indefinetely and the OS to kill the script. Until YAML::PP is fixed.
+
+0.25    2023-11-07 12:00
+        Change untainting yaml string input from ($yaml_string) = each %{{$yaml_string,0}};
+        to ($yaml_string) = keys %{{$yaml_string,0}}; because it was
+        warning about "each on anonymous hash will always start from the beginning"
+        Also a new test file was added (t/14-yaml-tainted-input.t) to
+        test yaml2perl with tainted yaml string as input.
+
+0.26    2023-12-29 12:00
+        Clarified the documentation that internally YAML::PP is used and
+        that it has no problem with handling yaml strings which contain
+        escaped quotes.
+
+0.27    2024-03-14 11:00
+        Chnaged the shortcut command-line interface
+        for the provided scripts so that
+        -r is equivalent to --terse and -d is equivalent to --indent.
+        Replaced 'warn()' with 'print STDERR'.
+        In eval()'ing code which dies (e.g. my $res = eval { YAML::PP::Dump($pv) }; ) I have used this 'if( $@ || ! defined($res) )' which now became if( ! defined($res) )'.
+
+0.28    2024-04-08 18:00
+        Test file "t/12-from-file.t", at very few times, fails
+        (under M$) because comparing a data structure fails on
+        comparing two floats which must be the same and are the
+        same except the last decimal digit. As from this version,
+        the floats in the test data for this particular test is shorten
+        to max 4 decimal places.
+        These subs: dump2perl, dump2json, dump2yaml and dump2dump
+        are, from now, not exported by default neither they are
+        part of any export tag-group (they used to be in the ':dump' tag-group)
+        These subs must now be explicitly imported.
+        The reason is that 'dump2perl' (and the rest use this)
+        is eval'ing its input which may come from user.
+        Eval'ing (unchecked) user input is considered a security problem.
+        These subs will not be removed but be imported
+        by specific caller request.
+        Test "t/04-dump2-use-is-explicit.t" has been added to check that
+        these subs are not exported by default.
+
+0.29    2024-10-15 18:00
+        Test file "t/12-from-file.t", still fails because of the issue
+        mentioned Changes of v0.28. Therefore I have reduced the number
+        of digits to zero. This is a minor issue and spent more energy than
+        necessary for it.
+
+0.30    2025-07-28 00:00
+        Added a new feature to allow perl2json() to
+        handle input (Perl) data structures which may
+        contain objects, with perl2json($data, {convert_blessed=>1}),
+        provided the object implements a TO_JSON() method.
+        Switched to Test::TempDir::Tiny in test files.
+        And removed taint mode from test '12-from-file.t'
